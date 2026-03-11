@@ -5,6 +5,9 @@ import Bills from './pages/Bills'
 import Debts from './pages/Debts'
 import Payments from './pages/Payments'
 import NotFound from './pages/NotFound'
+import Index from './pages/Index'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 import { Routes, Route } from 'react-router'
 import { useState } from 'react'
@@ -24,7 +27,10 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
+        <Route path="/" element={<Index/>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
         <Route path="/bills" element={<Bills billList={billList} setBillList={setBillList} billColumns={billColumns}/>} />
         <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} debtsUrl={debtsUrl} token={token} />} />
         <Route path="/payments" element={<Payments debtsUrl={debtsUrl} token={token}/>} />
