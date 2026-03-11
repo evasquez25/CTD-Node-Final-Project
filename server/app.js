@@ -1,9 +1,8 @@
 const express = require('express')
 const cors = require('cors')
-const session = require('express-session')
-const MongoDBStore = require('connect-mongodb-session')(session)
 const dotenv = require('dotenv')
 const connectDB = require('./db/connect.js')
+const authRouter = require('./routes/auth');
 
 dotenv.config()
 
@@ -14,31 +13,13 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-// Database
-const store = new MongoDBStore({
-  uri: process.env.MONGO_URI,
-  collection: 'mySessions'
-})
-
-store.on('error', (error) => {
-  console.error('MongoDB session store error:', error)
-})
-
-const sessionParams = {
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-  store: store,
-  cookie: { secure: false, sameSite: 'strict' }
-};
-
+// Production security settings
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1)
-  sessionParams.cookie.secure = true
-};
+}
 
-// Session middleware
-app.use(session(sessionParams))
+// Auth routes
+app.use('/api/auth', authRouter);
 
 // Start server
 const start = async () => {
