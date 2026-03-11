@@ -8,16 +8,22 @@ import NotFound from './pages/NotFound'
 import Index from './pages/Index'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import { isAuthenticated } from './utils/auth'
 
-import { Routes, Route } from 'react-router'
+import { Routes, Route, useLocation } from 'react-router'
 import { useState } from 'react'
 
 const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
 const token = `Bearer ${import.meta.env.VITE_PAT}`
 
 function App() {
+  const location = useLocation()
   const [billList, setBillList] = useState([])
   const [debtList, setDebtList] = useState([])
+
+  // Routes that should NOT show the header
+  const noHeaderRoutes = ['/', '/login', '/register']
+  const shouldShowHeader = isAuthenticated() && !noHeaderRoutes.includes(location.pathname)
 
   // Statically defined for consistency across components
   const billColumns = ['Nombre', 'Cantidad Mensual', 'Cantidad Quincenal', 'Fecha Debida', 'Pagado?', 'Notas']
@@ -25,7 +31,7 @@ function App() {
 
   return (
     <div>
-      <Header />
+      {shouldShowHeader && <Header />}
       <Routes>
         <Route path="/" element={<Index/>} />
         <Route path="/login" element={<Login />} />
