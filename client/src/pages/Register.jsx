@@ -7,24 +7,59 @@ function Register() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+        setError('')
+        setLoading(true)
+
         if (password !== confirmPassword) {
-            alert('Passwords do not match')
+            setError('Passwords do not match')
+            setLoading(false)
             return
         }
-        // TODO: Add actual registration logic
-        console.log('Register:', { name, email, password })
-        // For now, just navigate to login
-        navigate('/login')
+
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: name,
+                    email,
+                    password,
+                    confirmPassword
+                })
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Registration failed')
+            }
+
+            // Store token in localStorage
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('user', JSON.stringify(data.user))
+            
+            // Navigate to home
+            navigate('/home')
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.card}>
                 <h1>Register</h1>
+                {error && <div className={styles.error}>{error}</div>}
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>
                         <label htmlFor="name">Name</label>
@@ -34,6 +69,7 @@ function Register() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div className={styles.formGroup}>
@@ -44,6 +80,7 @@ function Register() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div className={styles.formGroup}>
@@ -54,6 +91,7 @@ function Register() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div className={styles.formGroup}>
@@ -64,9 +102,12 @@ function Register() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
-                    <button type="submit" className={styles.btn}>Register</button>
+                    <button type="submit" className={styles.btn} disabled={loading}>
+                        {loading ? 'Registering...' : 'Register'}
+                    </button>
                 </form>
                 <p className={styles.link}>
                     Already have an account? <Link to="/login">Login</Link>

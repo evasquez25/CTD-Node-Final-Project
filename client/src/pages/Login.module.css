@@ -84,3 +84,13 @@
 .link a:hover {
     text-decoration: underline;
 }
+
+.error {
+    background: #fee;
+    color: #c33;
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    border: 1px solid #fcc;
+    text-align: center;
+}
