@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import styles from './PaymentsForm.module.css'
 
 function PaymentsForm({ setPayments }) {
-    const [payments, setPaymentsList] = useState([])
     const [debts, setDebts] = useState([])
     const [formData, setFormData] = useState({
         type: 'Bill',
@@ -48,7 +47,6 @@ function PaymentsForm({ setPayments }) {
                 }
 
                 const paymentsData = await response.json()
-                setPaymentsList(paymentsData)
                 setPayments(paymentsData)
             } catch (error) {
                 console.error('Error fetching payments:', error)
@@ -115,7 +113,6 @@ function PaymentsForm({ setPayments }) {
             }
 
             const responseData = await response.json()
-            console.log('Payment added successfully:', responseData)
             return responseData
         } catch (error) {
             console.error('Error adding payment:', error)
@@ -145,7 +142,6 @@ function PaymentsForm({ setPayments }) {
             'Notas': formData.notes
         }
 
-        setPaymentsList(prev => [...prev, newItem])
         setPayments(prev => [...prev, newItem])
 
         try {
@@ -153,7 +149,6 @@ function PaymentsForm({ setPayments }) {
         } catch (error) {
             console.error('Error adding payment:', error)
             // Remove from local state if API call failed
-            setPaymentsList(prev => prev.filter(item => item !== newItem))
             setPayments(prev => prev.filter(item => item !== newItem))
         }
 

@@ -38,6 +38,7 @@ const getPayments = async (req, res, next) => {
       }
       
       return {
+        '_id': payment._id,
         'Tipo': payment.type,
         'Categoría': categoryName,
         'Cantidad': payment.amount,
@@ -146,6 +147,19 @@ const deletePayment = async (req, res, next) => {
     
     if (!payment) {
       return res.status(404).json({ error: 'Payment not found' });
+    }
+    
+    // If this was a debt payment, update the debt balance
+    if (payment.type === 'Debt' && payment.debtId) {
+      const debt = await Debt.findById(payment.debtId);
+      if (debt) {
+        // Subtract the payment amount from totalPaid and recalculate remaining
+        debt.totalPaid -= payment.amount;
+        debt.remaining = debt.total - debt.totalPaid;
+        debt.isPaid = debt.remaining <= 0;
+        
+        await debt.save();
+      }
     }
     
     res.json({

@@ -75,7 +75,6 @@ function DebtsForm({ setDebtList }) {
             }
 
             const responseData = await response.json()
-            console.log('Debt added successfully:', responseData)
             return responseData
         } catch (error) {
             console.error('Error adding debt:', error)
