@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound'
 import Index from './pages/Index'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ProtectedRoute from './components/ProtectedRoute'
 import { isAuthenticated } from './utils/auth'
 
 import { Routes, Route, useLocation } from 'react-router'
@@ -36,10 +37,26 @@ function App() {
         <Route path="/" element={<Index/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
-        <Route path="/bills" element={<Bills billList={billList} setBillList={setBillList} billColumns={billColumns}/>} />
-        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} debtsUrl={debtsUrl} token={token} />} />
-        <Route path="/payments" element={<Payments debtsUrl={debtsUrl} token={token}/>} />
+        <Route path="/home" element={
+          <ProtectedRoute>
+            <Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />
+          </ProtectedRoute>
+        } />
+        <Route path="/bills" element={
+          <ProtectedRoute>
+            <Bills billList={billList} setBillList={setBillList} billColumns={billColumns}/>
+          </ProtectedRoute>
+        } />
+        <Route path="/debts" element={
+          <ProtectedRoute>
+            <Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} />
+          </ProtectedRoute>
+        } />
+        <Route path="/payments" element={
+          <ProtectedRoute>
+            <Payments debtsUrl={debtsUrl} token={token}/>
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -3,6 +3,7 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const connectDB = require('./db/connect.js')
 const authRouter = require('./routes/auth');
+const debtRouter = require('./routes/debtRoutes');
 
 dotenv.config()
 
@@ -10,7 +11,10 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 // Security
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:5174',
+  credentials: true
+}))
 app.use(express.json())
 
 // Production security settings
@@ -20,6 +24,15 @@ if (app.get('env') === 'production') {
 
 // Auth routes
 app.use('/api/auth', authRouter);
+
+// Debt routes
+app.use('/api/debts', debtRouter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
 
 // Start server
 const start = async () => {

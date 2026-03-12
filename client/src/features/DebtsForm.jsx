@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import styles from './DebtsForm.module.css'
 
-function DebtsForm({ setDebtList, debtsUrl, token }) {
+function DebtsForm({ setDebtList }) {
     const [formData, setFormData] = useState({
         name: '',
         amount: '',
@@ -21,74 +21,57 @@ function DebtsForm({ setDebtList, debtsUrl, token }) {
     // Get debts to display on table
     useEffect(() => {
         const fetchDebts = async () => {
-            const options = {
-                method: 'GET',
-                headers: {
-                    Authorization: token,
-                    'Content-Type': 'application/json'
-                }
-            }
+            const token = localStorage.getItem('token')
+            if (!token) return
 
             try {
-                const response = await fetch(debtsUrl, options)
-                if (!response.ok) {
-                    const body = await response.text();
-                    console.error('Error posting data:', response.status, body);
-                    throw new Error('Error posting data');
-                }
-                const data = await response.json()
-
-                const fetchedDebts = data.records.map((record) => {
-                    const debt = {
-                        'Nombre': record.fields.Name,
-                        'Total': record.fields.Total,
-                        'Total Pagado': record.fields['Total Paid'],
-                        'Restante': record.fields.Remaining,
-                        'Pago Minimo': record.fields['Min Payment'],
-                        'Fecha de Pago': record.fields.Date,
-                        'Pagado?': record.fields['Paid?'],
-                        'Notas': record.fields.Notes
+                const response = await fetch('/api/debts', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
-                    return debt
                 })
-                setDebtList(fetchedDebts)
+
+                if (!response.ok) {
+                    throw new Error('Error fetching debts')
+                }
+
+                const debts = await response.json()
+                setDebtList(debts)
             } catch (error) {
                 console.error('Error fetching debts:', error)
             }
         }
         fetchDebts()
-    }, [debtsUrl, setDebtList, token])
+    }, [setDebtList])
 
     const addDebt = async (data) => {
-        const payload = {
-            records: [
-                {
-                    fields: {
-                        'Name': data.name,
-                        'Total': Number(data.amount),
-                        'Min Payment': Number(data.minPayment),
-                        'Date': data.date,
-                        'Notes': data.notes
-                    }
-                }
-            ]
+        const token = localStorage.getItem('token')
+        if (!token) {
+            throw new Error('No authentication token found')
         }
 
-        const options = {
-            method: 'POST',
-            headers: {
-                Authorization: token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
+        const payload = {
+            name: data.name,
+            amount: Number(data.amount),
+            minPayment: Number(data.minPayment),
+            date: data.date,
+            notes: data.notes
         }
 
         try {
-            const response = await fetch(debtsUrl, options)
+            const response = await fetch('/api/debts', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+
             if (!response.ok) {
-                const body = await response.text();
-                console.error('Error posting data:', response.status, body);
-                throw new Error('Error posting data');
+                const errorData = await response.json()
+                throw new Error(errorData.error || 'Error adding debt')
             }
 
             const responseData = await response.json()

@@ -1,13 +1,11 @@
 import Table from '../shared/Table'
 import DebtsForm from '../features/DebtsForm'
 
-function Debts({ debtList, setDebtList, debtColumns, debtsUrl, token }) {
+function Debts({ debtList, setDebtList, debtColumns }) {
     return (
         <div>
             <DebtsForm 
                 setDebtList={setDebtList} 
-                debtsUrl={debtsUrl} 
-                token={token} 
             />
             <Table
                 title="Debts"
