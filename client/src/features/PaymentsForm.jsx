@@ -76,7 +76,6 @@ function PaymentsForm({ setPayments }) {
                 }
 
                 const debtsData = await response.json()
-                console.log('Fetched debts:', debtsData) // Debug log
                 setDebts(debtsData)
             } catch (error) {
                 console.error('Error fetching debts:', error)
@@ -138,8 +137,6 @@ function PaymentsForm({ setPayments }) {
             'Categoría': formData.type === 'Debt' 
                 ? (() => {
                     const selectedDebt = debts.find(debt => debt._id === formData.category);
-                    console.log('Selected debt ID:', formData.category);
-                    console.log('Found debt:', selectedDebt);
                     return selectedDebt?.Nombre || 'Deuda no encontrada';
                 })()
                 : formData.category,
@@ -201,14 +198,11 @@ function PaymentsForm({ setPayments }) {
                             required
                         >
                             <option key="default" value="">Seleccione una deuda...</option>
-                            {debts.map((debt) => {
-                                console.log('Debt object:', debt) // Debug log
-                                return (
-                                    <option key={debt._id || debt.Nombre} value={debt._id}>
-                                        {debt.Nombre} - ${debt.Restante} restante
-                                    </option>
-                                )
-                            })}
+                            {debts.map((debt) => (
+                                <option key={debt._id || debt.Nombre} value={debt._id}>
+                                    {debt.Nombre} - ${debt.Restante} restante
+                                </option>
+                            ))}
                         </select>
                     ) : (
                         <input
