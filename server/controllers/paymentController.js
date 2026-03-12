@@ -26,12 +26,24 @@ const getPayments = async (req, res, next) => {
     const payments = await Payment.find({ user: userId }).sort({ createdAt: -1 });
     
     // Format payments to match frontend structure
-    const formattedPayments = payments.map(payment => ({
-      'Tipo': payment.type,
-      'Categoría': payment.category,
-      'Cantidad': payment.amount,
-      'Fecha': payment.paymentDate.toLocaleDateString('en-US'),
-      'Notas': payment.notes || ''
+    const formattedPayments = await Promise.all(payments.map(async (payment) => {
+      let categoryName = payment.category;
+      
+      // If this is a debt payment, get the debt name
+      if (payment.type === 'Debt' && payment.debtId) {
+        const debt = await Debt.findById(payment.debtId);
+        if (debt) {
+          categoryName = debt.name;
+        }
+      }
+      
+      return {
+        'Tipo': payment.type,
+        'Categoría': categoryName,
+        'Cantidad': payment.amount,
+        'Fecha': payment.paymentDate.toLocaleDateString('en-US'),
+        'Notas': payment.notes || ''
+      };
     }));
     
     res.json(formattedPayments);
