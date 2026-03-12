@@ -60,6 +60,22 @@
     outline-offset: 2px;
 }
 
+.table .deleteButton {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.table .deleteButton:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
 .tableTitle {
     color: #333;
     width: 80%;

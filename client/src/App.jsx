@@ -14,9 +14,6 @@ import { isAuthenticated } from './utils/auth'
 import { Routes, Route, useLocation } from 'react-router'
 import { useState } from 'react'
 
-const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
-const token = `Bearer ${import.meta.env.VITE_PAT}`
-
 function App() {
   const location = useLocation()
   const [billList, setBillList] = useState([])
@@ -28,7 +25,7 @@ function App() {
 
   // Statically defined for consistency across components
   const billColumns = ['Nombre', 'Cantidad Mensual', 'Cantidad Quincenal', 'Fecha Debida', 'Pagado?', 'Notas']
-  const debtColumns = ['Nombre', 'Total', 'Total Pagado', 'Restante', 'Pago Minimo', 'Fecha de Pago', 'Pagado?', 'Notas']
+  const debtColumns = ['Nombre', 'Total', 'Total Pagado', 'Restante', 'Pago Minimo', 'Fecha de Pago', 'Pagado?', 'Notas', 'Acciones']
 
   return (
     <div>
@@ -54,7 +51,7 @@ function App() {
         } />
         <Route path="/payments" element={
           <ProtectedRoute>
-            <Payments debtsUrl={debtsUrl} token={token}/>
+            <Payments />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />

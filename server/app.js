@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const connectDB = require('./db/connect.js')
 const authRouter = require('./routes/auth');
 const debtRouter = require('./routes/debtRoutes');
+const paymentRouter = require('./routes/paymentRoutes');
 
 dotenv.config()
 
@@ -27,6 +28,9 @@ app.use('/api/auth', authRouter);
 
 // Debt routes
 app.use('/api/debts', debtRouter);
+
+// Payment routes
+app.use('/api/payments', paymentRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

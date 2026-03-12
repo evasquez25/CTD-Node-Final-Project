@@ -1,6 +1,6 @@
 import styles from './Table.module.css'
 
-function Table({ title, columns, data = [], children }) {
+function Table({ title, columns, data = [], children, onDelete = null }) {
     return (
         <>
             <h2 className={styles.tableTitle}>{title}</h2>
@@ -18,11 +18,22 @@ function Table({ title, columns, data = [], children }) {
                             const rowId = row.id || row.Nombre || `row-${rowIndex}`;
                             return (
                                 <tr key={rowId}>
-                                    {Object.entries(row).map(([columnName, cellValue]) => (
+                                    {Object.entries(row).filter(([key]) => key !== '_id').map(([columnName, cellValue]) => (
                                         <td key={`${rowId}-${columnName}`}>
                                             {cellValue}
                                         </td>
                                     ))}
+                                    {onDelete && (
+                                        <td key={`${rowId}-delete`}>
+                                            <button 
+                                                onClick={() => onDelete(row._id)}
+                                                className={styles.deleteButton}
+                                                title="Delete debt"
+                                            >
+                                                🗑️
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             );
                         })

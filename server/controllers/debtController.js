@@ -26,6 +26,7 @@ const getDebts = async (req, res, next) => {
     
     // Format debts to match frontend structure
     const formattedDebts = debts.map(debt => ({
+      '_id': debt._id,
       'Nombre': debt.name,
       'Total': debt.total,
       'Total Pagado': debt.totalPaid,
