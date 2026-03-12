@@ -5,6 +5,8 @@ const connectDB = require('./db/connect.js')
 const authRouter = require('./routes/auth');
 const debtRouter = require('./routes/debtRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
+const helmet = require('helmet');
+const xss = require('xss-clean');
 
 dotenv.config()
 
@@ -17,11 +19,14 @@ app.use(cors({
   credentials: true
 }))
 app.use(express.json())
+app.use(helmet());
+app.use(xss());
 
 // Production security settings
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1)
 }
+
 
 // Auth routes
 app.use('/api/auth', authRouter);
