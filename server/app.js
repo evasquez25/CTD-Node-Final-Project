@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
+const path = require('path')
 const connectDB = require('./db/connect.js')
 const authRouter = require('./routes/auth');
 const debtRouter = require('./routes/debtRoutes');
@@ -12,12 +13,10 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const CLIENT_BUILD_PATH = path.join(__dirname, '..', 'client', 'dist')
 
 // Security
-app.use(cors({
-  origin: 'http://localhost:5174',
-  credentials: true
-}))
+app.use(cors())
 app.use(express.json())
 app.use(helmet());
 app.use(xss());
@@ -36,6 +35,16 @@ app.use('/api/debts', debtRouter);
 
 // Payment routes
 app.use('/api/payments', paymentRouter);
+
+// Serve React app build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(CLIENT_BUILD_PATH))
+
+  // Any non-API route should load the React app.
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(CLIENT_BUILD_PATH, 'index.html'))
+  })
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
